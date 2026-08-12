@@ -1,0 +1,6 @@
+@WorkSphere.WebAPI_HostAddress = http://localhost:5180
+
+GET {{WorkSphere.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

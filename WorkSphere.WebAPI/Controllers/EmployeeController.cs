@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using WorkSphere.Application.Features.Employees;
+using WorkSphere.Application.DTOs;
+
+namespace WorkSphere.WebAPI.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EmployeeController : Controller
+    {
+        private readonly EmployeeService _employeeService;
+
+        public EmployeeController(EmployeeService employeeService)
+        {
+            _employeeService = employeeService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<EmployeeResponseDto>>> GetAll()
+        {
+            var employees = await _employeeService.GetAllAsync();
+
+            return Ok(employees);
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<EmployeeResponseDto>> GetById(Guid id)
+        {
+            var employee = await _employeeService.GetByIdAsync(id);
+
+            if (employee is null)
+                return NotFound();
+
+            return Ok(employee);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create([FromBody] EmployeeCreateDto createDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _employeeService.AddAsync(createDto);
+
+            // Map created domain entity -> response DTO (service mapping exists, reuse)
+            var response = await _employeeService.GetByIdAsync(created.Id);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = created.Id },
+                response);
+        }
+    }
+}

@@ -1,0 +1,26 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+
+# Test results
+TestResults/
+
+# NuGet
+*.nupkg
+packages/
+
+# Logs
+*.log
+
+# Environment / secrets
+appsettings.Development.json
+.env
+
+# OS
+.DS_Store
+Thumbs.db
