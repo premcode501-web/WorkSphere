@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { EmployeeResponse, PaginatedResponse } from '../types';
 import { getEmployees } from '../services/employeeService';
+import EmployeeForm from '../components/employees/EmployeeForm';
 
 const Employees: React.FC = () => {
   const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
@@ -13,8 +14,10 @@ const Employees: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>(''); // controlled input
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined); // active search used for requests
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
-  // Fetch employees whenever pageNumber, pageSize or searchQuery changes
+  // Fetch employees whenever pageNumber, pageSize, searchQuery or refreshKey changes
   useEffect(() => {
     let cancelled = false;
 
@@ -50,7 +53,7 @@ const Employees: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [pageNumber, pageSize, searchQuery]);
+  }, [pageNumber, pageSize, searchQuery, refreshKey]);
 
   function handlePrev() {
     setPageNumber((p) => Math.max(1, p - 1));
@@ -79,21 +82,43 @@ const Employees: React.FC = () => {
     }
   }
 
+  function handleCreated() {
+    // After create, close form and refresh list (reset to page 1)
+    setShowForm(false);
+    setPageNumber(1);
+    // bump refreshKey to force reload if needed
+    setRefreshKey((k) => k + 1);
+  }
+
   return (
     <section>
       <h2>Employees</h2>
 
-      <form onSubmit={handleSearchSubmit} style={{ marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
-        <input
-          type="text"
-          placeholder="Search employees..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ padding: 8, minWidth: 240 }}
-          aria-label="Search employees"
-        />
-        <button type="submit" style={{ padding: '8px 12px' }}>Search</button>
-      </form>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="Search employees..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ padding: 8, minWidth: 240 }}
+            aria-label="Search employees"
+          />
+          <button type="submit" style={{ padding: '8px 12px' }}>Search</button>
+        </form>
+
+        <div>
+          {!showForm && (
+            <button onClick={() => setShowForm(true)} style={{ padding: '8px 12px' }}>New Employee</button>
+          )}
+        </div>
+      </div>
+
+      {showForm && (
+        <div style={{ marginBottom: 16 }}>
+          <EmployeeForm onCancel={() => setShowForm(false)} onSuccess={() => handleCreated()} />
+        </div>
+      )}
 
       {loading && <p>Loading employees...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
