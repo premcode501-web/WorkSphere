@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WorkSphere.Application.Interfaces;
+using WorkSphere.Application.DTOs;
 using WorkSphere.Domain.Entities;
 
 namespace WorkSphere.Infrastructure.Persistence
@@ -48,6 +48,35 @@ namespace WorkSphere.Infrastructure.Persistence
         {
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<(List<Employee> Items, int TotalCount)> GetPagedAsync(EmployeeQueryParameters query)
+        {
+            // Build queryable so filtering and paging happen in DB
+            var q = _context.Employees
+                .Include(e => e.Department)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Search))
+            {
+                var s = query.Search.Trim();
+                q = q.Where(e =>
+                    e.EmployeeCode.Contains(s) ||
+                    e.FirstName.Contains(s) ||
+                    e.LastName.Contains(s) ||
+                    e.Email.Contains(s));
+            }
+
+            var totalCount = await q.CountAsync();
+
+            // Provide deterministic ordering for paging
+            var items = await q
+                .OrderBy(e => e.EmployeeCode)
+                .Skip((query.PageNumber - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

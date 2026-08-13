@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WorkSphere.Application.Interfaces;
-using WorkSphere.Domain.Entities;
 using WorkSphere.Application.DTOs;
+using WorkSphere.Domain.Entities;
 
 namespace WorkSphere.Application.Features.Employees
 {
@@ -16,6 +15,25 @@ namespace WorkSphere.Application.Features.Employees
         public EmployeeService(IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
+        }
+
+        public async Task<PaginatedResponse<EmployeeResponseDto>> GetPagedAsync(EmployeeQueryParameters query)
+        {
+            // Validate/normalize query defaults already provided by DTO attributes and defaults.
+            var (items, totalCount) = await _employeeRepository.GetPagedAsync(query);
+
+            var dtoItems = items.Select(MapToResponseDto).ToList();
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
+
+            return new PaginatedResponse<EmployeeResponseDto>
+            {
+                Items = dtoItems,
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
         }
 
         public async Task<List<EmployeeResponseDto>> GetAllAsync()
