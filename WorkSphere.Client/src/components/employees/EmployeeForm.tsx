@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import type { EmployeeCreateRequest } from '../../types';
+import React, { useEffect, useState } from 'react';
+import type { EmployeeCreateRequest, Department } from '../../types';
 import { createEmployee } from '../../services/employeeService';
+import { getDepartments } from '../../services/departmentService';
 
 interface EmployeeFormProps {
   initialValues?: Partial<EmployeeCreateRequest>;
@@ -24,10 +25,37 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
   const [dateOfJoining, setDateOfJoining] = useState(initialValues.dateOfJoining ?? '');
   const [departmentId, setDepartmentId] = useState(initialValues.departmentId ?? '');
 
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departmentsLoading, setDepartmentsLoading] = useState<boolean>(false);
+  const [departmentsError, setDepartmentsError] = useState<string | null>(null);
+
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadDepts() {
+      setDepartmentsLoading(true);
+      setDepartmentsError(null);
+      try {
+        const deps = await getDepartments();
+        if (cancelled) return;
+        setDepartments(deps);
+      } catch (err: any) {
+        if (cancelled) return;
+        console.error('Failed to load departments', err);
+        setDepartmentsError(err?.message ?? 'Failed to load departments');
+      } finally {
+        if (!cancelled) setDepartmentsLoading(false);
+      }
+    }
+    loadDepts();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function validate(): boolean {
     const e: ValidationErrors = {};
@@ -102,7 +130,18 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
 
         <div>
           <label style={{ display: 'block', fontSize: 12 }}>Department *</label>
-          <input value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} style={{ width: '100%', padding: 8 }} />
+          {departmentsLoading ? (
+            <div>Loading departments...</div>
+          ) : departmentsError ? (
+            <div style={{ color: 'red' }}>{departmentsError}</div>
+          ) : (
+            <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} style={{ width: '100%', padding: 8 }}>
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          )}
           {errors.departmentId && <div style={{ color: 'red', fontSize: 12 }}>{errors.departmentId}</div>}
         </div>
 

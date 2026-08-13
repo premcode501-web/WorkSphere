@@ -39,3 +39,9 @@ export interface EmployeeCreateRequest {
   departmentId: string;
   // departmentName and departmentCode are normally derived server-side from departmentId
 }
+
+export interface Department {
+  id: string;
+  name: string;
+  code?: string;
+}
