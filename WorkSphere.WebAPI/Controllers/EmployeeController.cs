@@ -15,12 +15,16 @@ namespace WorkSphere.WebAPI.Controllers
             _employeeService = employeeService;
         }
 
+        // Updated: supports search, paging via query parameters
         [HttpGet]
-        public async Task<ActionResult<List<EmployeeResponseDto>>> GetAll()
+        public async Task<ActionResult<PaginatedResponse<EmployeeResponseDto>>> Get([FromQuery] EmployeeQueryParameters query)
         {
-            var employees = await _employeeService.GetAllAsync();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok(employees);
+            var paged = await _employeeService.GetPagedAsync(query);
+
+            return Ok(paged);
         }
 
         [HttpGet("{id:guid}")]
@@ -42,13 +46,37 @@ namespace WorkSphere.WebAPI.Controllers
 
             var created = await _employeeService.AddAsync(createDto);
 
-            // Map created domain entity -> response DTO (service mapping exists, reuse)
             var response = await _employeeService.GetByIdAsync(created.Id);
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = created.Id },
                 response);
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<EmployeeResponseDto>> Update(Guid id, [FromBody] EmployeeUpdateDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _employeeService.UpdateAsync(id, updateDto);
+
+            if (updated is null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleted = await _employeeService.DeleteAsync(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

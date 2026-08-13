@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WorkSphere.Domain.Entities;
+using WorkSphere.Application.DTOs;
 
 namespace WorkSphere.Application.Interfaces
 {
@@ -16,5 +15,10 @@ namespace WorkSphere.Application.Interfaces
         Task AddAsync(Employee employee);
 
         Task UpdateAsync(Employee employee);
+
+        Task DeleteAsync(Employee employee);
+
+        // New: paged search. Returns items + total count so Application layer can compute pagination.
+        Task<(List<Employee> Items, int TotalCount)> GetPagedAsync(EmployeeQueryParameters query);
     }
 }

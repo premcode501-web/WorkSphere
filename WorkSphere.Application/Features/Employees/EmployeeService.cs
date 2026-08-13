@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WorkSphere.Application.Interfaces;
-using WorkSphere.Domain.Entities;
 using WorkSphere.Application.DTOs;
+using WorkSphere.Domain.Entities;
 
 namespace WorkSphere.Application.Features.Employees
 {
@@ -16,6 +15,25 @@ namespace WorkSphere.Application.Features.Employees
         public EmployeeService(IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
+        }
+
+        public async Task<PaginatedResponse<EmployeeResponseDto>> GetPagedAsync(EmployeeQueryParameters query)
+        {
+            // Validate/normalize query defaults already provided by DTO attributes and defaults.
+            var (items, totalCount) = await _employeeRepository.GetPagedAsync(query);
+
+            var dtoItems = items.Select(MapToResponseDto).ToList();
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
+
+            return new PaginatedResponse<EmployeeResponseDto>
+            {
+                Items = dtoItems,
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
         }
 
         public async Task<List<EmployeeResponseDto>> GetAllAsync()
@@ -66,6 +84,41 @@ namespace WorkSphere.Application.Features.Employees
             await _employeeRepository.AddAsync(employee);
 
             return employee;
+        }
+
+        public async Task<EmployeeResponseDto?> UpdateAsync(Guid id, EmployeeUpdateDto dto)
+        {
+            var employee = await _employeeRepository.GetByIdAsync(id);
+
+            if (employee is null)
+                return null;
+
+            // Update only allowed fields. Do NOT change Id or EmployeeCode.
+            employee.FirstName = dto.FirstName;
+            employee.LastName = dto.LastName;
+            employee.Email = dto.Email;
+            employee.PhoneNumber = dto.PhoneNumber;
+            employee.DateOfJoining = DateOnly.FromDateTime(dto.DateOfJoining);
+            employee.DepartmentId = dto.DepartmentId;
+            employee.IsActive = dto.IsActive;
+
+            employee.ModifiedOn = DateTime.UtcNow;
+
+            await _employeeRepository.UpdateAsync(employee);
+
+            return MapToResponseDto(employee);
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var employee = await _employeeRepository.GetByIdAsync(id);
+
+            if (employee is null)
+                return false;
+
+            await _employeeRepository.DeleteAsync(employee);
+
+            return true;
         }
 
         private static EmployeeResponseDto MapToResponseDto(Employee e)
