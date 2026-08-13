@@ -50,5 +50,19 @@ namespace WorkSphere.WebAPI.Controllers
                 new { id = created.Id },
                 response);
         }
+
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<EmployeeResponseDto>> Update(Guid id, [FromBody] EmployeeUpdateDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _employeeService.UpdateAsync(id, updateDto);
+
+            if (updated is null)
+                return NotFound();
+
+            return Ok(updated);
+        }
     }
 }

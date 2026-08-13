@@ -68,6 +68,29 @@ namespace WorkSphere.Application.Features.Employees
             return employee;
         }
 
+        public async Task<EmployeeResponseDto?> UpdateAsync(Guid id, EmployeeUpdateDto dto)
+        {
+            var employee = await _employeeRepository.GetByIdAsync(id);
+
+            if (employee is null)
+                return null;
+
+            // Update only allowed fields. Do NOT change Id or EmployeeCode.
+            employee.FirstName = dto.FirstName;
+            employee.LastName = dto.LastName;
+            employee.Email = dto.Email;
+            employee.PhoneNumber = dto.PhoneNumber;
+            employee.DateOfJoining = DateOnly.FromDateTime(dto.DateOfJoining);
+            employee.DepartmentId = dto.DepartmentId;
+            employee.IsActive = dto.IsActive;
+
+            employee.ModifiedOn = DateTime.UtcNow;
+
+            await _employeeRepository.UpdateAsync(employee);
+
+            return MapToResponseDto(employee);
+        }
+
         private static EmployeeResponseDto MapToResponseDto(Employee e)
         {
             return new EmployeeResponseDto
