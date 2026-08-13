@@ -43,5 +43,11 @@ namespace WorkSphere.Infrastructure.Persistence
             _context.Employees.Update(employee);
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(Employee employee)
+        {
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+        }
     }
 }

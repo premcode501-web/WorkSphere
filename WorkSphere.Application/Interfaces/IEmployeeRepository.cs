@@ -16,5 +16,7 @@ namespace WorkSphere.Application.Interfaces
         Task AddAsync(Employee employee);
 
         Task UpdateAsync(Employee employee);
+
+        Task DeleteAsync(Employee employee);
     }
 }

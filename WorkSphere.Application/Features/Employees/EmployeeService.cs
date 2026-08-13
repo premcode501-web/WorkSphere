@@ -91,6 +91,18 @@ namespace WorkSphere.Application.Features.Employees
             return MapToResponseDto(employee);
         }
 
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var employee = await _employeeRepository.GetByIdAsync(id);
+
+            if (employee is null)
+                return false;
+
+            await _employeeRepository.DeleteAsync(employee);
+
+            return true;
+        }
+
         private static EmployeeResponseDto MapToResponseDto(Employee e)
         {
             return new EmployeeResponseDto

@@ -64,5 +64,16 @@ namespace WorkSphere.WebAPI.Controllers
 
             return Ok(updated);
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleted = await _employeeService.DeleteAsync(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }
