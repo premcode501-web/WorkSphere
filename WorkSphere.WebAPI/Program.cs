@@ -10,6 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WorkSphereClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<WorkSphereDbContext>(options =>
@@ -26,6 +36,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+// Enable CORS using the named policy before authentication/authorization and before routing to controllers.
+app.UseCors("WorkSphereClient");
 
 app.UseAuthorization();
 app.UseSwagger();

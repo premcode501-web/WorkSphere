@@ -1,0 +1,29 @@
+// Centralized Type exports for the app
+
+export interface AppConfig {
+  appName: string;
+  version?: string;
+}
+
+// Employee and API response types (mirror backend DTOs)
+export interface EmployeeResponse {
+  id: string; // Guid from backend
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  dateOfJoining: string; // DateOnly serialized as ISO string
+  isActive: boolean;
+  departmentId: string;
+  departmentName: string;
+  departmentCode: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
