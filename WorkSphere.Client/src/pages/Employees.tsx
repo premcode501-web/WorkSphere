@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { EmployeeResponse, PaginatedResponse } from '../types';
-import { getEmployees } from '../services/employeeService';
+import { getEmployees, deleteEmployee } from '../services/employeeService';
 import EmployeeForm from '../components/employees/EmployeeForm';
 
 const Employees: React.FC = () => {
@@ -17,6 +17,9 @@ const Employees: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingEmployeeId, setEditingEmployeeId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [operationMessage, setOperationMessage] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
 
   // Fetch employees whenever pageNumber, pageSize, searchQuery or refreshKey changes
   useEffect(() => {
@@ -97,6 +100,35 @@ const Employees: React.FC = () => {
     setShowForm(true);
   }
 
+  async function handleDelete(id: string) {
+    const confirm = window.confirm('Are you sure you want to delete this employee? This action cannot be undone.');
+    if (!confirm) return;
+
+    setOperationMessage(null);
+    setOperationError(null);
+    setDeletingId(id);
+
+    try {
+      await deleteEmployee(id);
+      setOperationMessage('Employee deleted successfully');
+
+      // If this was the last item on the page and we're not on page 1, move to previous page
+      if (employees.length === 1 && pageNumber > 1) {
+        setPageNumber((p) => p - 1);
+        // ensure list reloads for new page
+        setRefreshKey((k) => k + 1);
+      } else {
+        // reload same page
+        setRefreshKey((k) => k + 1);
+      }
+    } catch (err: any) {
+      console.error('Failed to delete employee', err);
+      setOperationError(err?.message ?? 'Failed to delete employee');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <section>
       <h2>Employees</h2>
@@ -131,6 +163,9 @@ const Employees: React.FC = () => {
           />
         </div>
       )}
+
+      {operationMessage && <div style={{ color: 'green', marginBottom: 8 }}>{operationMessage}</div>}
+      {operationError && <div style={{ color: 'red', marginBottom: 8 }}>{operationError}</div>}
 
       {loading && <p>Loading employees...</p>}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
@@ -167,7 +202,10 @@ const Employees: React.FC = () => {
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>{formatDate(emp.dateOfJoining)}</td>
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>{emp.isActive ? 'Active' : 'Inactive'}</td>
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>
-                    <button onClick={() => handleEdit(emp.id)} style={{ padding: '6px 8px' }}>Edit</button>
+                    <button onClick={() => handleEdit(emp.id)} disabled={deletingId !== null} style={{ padding: '6px 8px', marginRight: 8 }}>Edit</button>
+                    <button onClick={() => handleDelete(emp.id)} disabled={deletingId !== null} style={{ padding: '6px 8px' }}>
+                      {deletingId === emp.id ? 'Deleting...' : 'Delete'}
+                    </button>
                   </td>
                 </tr>
               ))}

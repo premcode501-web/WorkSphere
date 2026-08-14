@@ -115,3 +115,22 @@ export async function updateEmployee(id: string, payload: EmployeeCreateRequest)
   const data = await res.json();
   return data as EmployeeResponse;
 }
+
+export async function deleteEmployee(id: string): Promise<void> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to delete employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  // No content expected; return void on success
+  return;
+}
