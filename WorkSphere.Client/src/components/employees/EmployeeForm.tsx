@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import type { EmployeeCreateRequest, Department } from '../../types';
-import { createEmployee, getEmployee, updateEmployee } from '../../services/employeeService';
+import { getEmployee } from '../../services/employeeService';
 import { getDepartments } from '../../services/departmentService';
+import { useAppDispatch } from '../../store/hooks';
+import { createEmployeeThunk, updateEmployeeThunk } from '../../store/slices/employeeThunks';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 interface EmployeeFormProps {
   initialValues?: Partial<EmployeeCreateRequest>;
@@ -37,6 +40,8 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, employe
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     let cancelled = false;
@@ -128,12 +133,14 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, employe
     try {
       setSubmitting(true);
       if (employeeId) {
-        const updated = await updateEmployee(employeeId, payload);
+        const action = await dispatch(updateEmployeeThunk({ id: employeeId, payload }));
+        const updated = unwrapResult(action);
         setSuccessMessage('Employee updated successfully');
         setApiError(null);
         if (onSuccess) onSuccess(updated);
       } else {
-        const created = await createEmployee(payload);
+        const action = await dispatch(createEmployeeThunk(payload));
+        const created = unwrapResult(action);
         setSuccessMessage('Employee created successfully');
         setApiError(null);
 

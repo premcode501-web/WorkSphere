@@ -1,77 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import type { EmployeeResponse, PaginatedResponse } from '../types';
-import { getEmployees, deleteEmployee } from '../services/employeeService';
 import EmployeeForm from '../components/employees/EmployeeForm';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { fetchEmployees, deleteEmployeeThunk } from '../store/slices/employeeThunks';
+import { setPageNumber } from '../store/slices/employeeSlice';
 
 const Employees: React.FC = () => {
-  const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const [pageSize] = useState<number>(10);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+
+  const employees = useAppSelector((s) => s.employees.employees);
+  const pageNumber = useAppSelector((s) => s.employees.pageNumber);
+  const pageSize = useAppSelector((s) => s.employees.pageSize);
+  const totalPages = useAppSelector((s) => s.employees.totalPages);
+  const totalCount = useAppSelector((s) => s.employees.totalCount);
+  const loading = useAppSelector((s) => s.employees.loading);
+  const error = useAppSelector((s) => s.employees.error);
 
   const [searchTerm, setSearchTerm] = useState<string>(''); // controlled input
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined); // active search used for requests
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingEmployeeId, setEditingEmployeeId] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState<number>(0);
+  //const [deletingId, setDeletingId] = useState<string | null>(null);
+  //const [operationMessage, setOperationMessage] = useState<string | null>(null);
+  //const [operationError, setOperationError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [operationMessage, setOperationMessage] = useState<string | null>(null);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  // Fetch employees whenever pageNumber, pageSize, searchQuery or refreshKey changes
+  // Fetch employees when pageNumber, pageSize or searchQuery changes (or on mount)
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const resp: PaginatedResponse<EmployeeResponse> = await getEmployees(
-          pageNumber,
-          pageSize,
-          searchQuery
-        );
-
-        if (cancelled) return;
-
-        setEmployees(resp.items ?? []);
-        setTotalCount(resp.totalCount ?? resp.items.length ?? 0);
-        setTotalPages(resp.totalPages ?? Math.max(1, Math.ceil((resp.totalCount ?? resp.items.length ?? 0) / pageSize)));
-      } catch (err: any) {
-        if (cancelled) return;
-        console.error('Failed to load employees', err);
-        setError(err?.message ?? 'Failed to load employees');
-        setEmployees([]);
-        setTotalCount(0);
-        setTotalPages(1);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pageNumber, pageSize, searchQuery, refreshKey]);
+    // dispatch thunk to fetch
+    dispatch(fetchEmployees({ pageNumber, pageSize, search: searchQuery }));
+  }, [dispatch, pageNumber, pageSize, searchQuery]);
 
   function handlePrev() {
-    setPageNumber((p) => Math.max(1, p - 1));
+    const newPage = Math.max(1, pageNumber - 1);
+    dispatch(setPageNumber(newPage));
+    dispatch(fetchEmployees({ pageNumber: newPage, pageSize, search: searchQuery }));
   }
 
   function handleNext() {
-    setPageNumber((p) => Math.min(totalPages, p + 1));
+    const newPage = Math.min(totalPages, pageNumber + 1);
+    dispatch(setPageNumber(newPage));
+    dispatch(fetchEmployees({ pageNumber: newPage, pageSize, search: searchQuery }));
   }
 
   function handleSearchSubmit(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    // When searching, reset to first page
-    setPageNumber(1);
-    setSearchQuery(searchTerm.trim() === '' ? undefined : searchTerm.trim());
+    // When searching, reset to first page and dispatch fetch
+    const q = searchTerm.trim() === '' ? undefined : searchTerm.trim();
+    setSearchQuery(q);
+    dispatch(setPageNumber(1));
+    dispatch(fetchEmployees({ pageNumber: 1, pageSize, search: q }));
   }
 
   function formatDate(dateStr?: string) {
@@ -87,12 +66,9 @@ const Employees: React.FC = () => {
   }
 
   function handleCreated() {
-    // After create/update, close form and refresh list (reset to page 1)
+    // After create/update, close form. Thunks refresh list as needed.
     setShowForm(false);
     setEditingEmployeeId(null);
-    setPageNumber(1);
-    // bump refreshKey to force reload if needed
-    setRefreshKey((k) => k + 1);
   }
 
   function handleEdit(id: string) {
@@ -109,18 +85,9 @@ const Employees: React.FC = () => {
     setDeletingId(id);
 
     try {
-      await deleteEmployee(id);
+      const action = await dispatch(deleteEmployeeThunk(id));
+      // unwrap if needed (not necessary here)
       setOperationMessage('Employee deleted successfully');
-
-      // If this was the last item on the page and we're not on page 1, move to previous page
-      if (employees.length === 1 && pageNumber > 1) {
-        setPageNumber((p) => p - 1);
-        // ensure list reloads for new page
-        setRefreshKey((k) => k + 1);
-      } else {
-        // reload same page
-        setRefreshKey((k) => k + 1);
-      }
     } catch (err: any) {
       console.error('Failed to delete employee', err);
       setOperationError(err?.message ?? 'Failed to delete employee');
