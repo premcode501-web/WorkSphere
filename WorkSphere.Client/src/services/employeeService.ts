@@ -75,3 +75,43 @@ export async function createEmployee(payload: EmployeeCreateRequest): Promise<Em
   const data = await res.json();
   return data as EmployeeResponse;
 }
+
+export async function getEmployee(id: string): Promise<EmployeeResponse> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to fetch employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return data as EmployeeResponse;
+}
+
+export async function updateEmployee(id: string, payload: EmployeeCreateRequest): Promise<EmployeeResponse> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to update employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return data as EmployeeResponse;
+}

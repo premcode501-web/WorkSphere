@@ -15,6 +15,7 @@ const Employees: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>(''); // controlled input
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined); // active search used for requests
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [editingEmployeeId, setEditingEmployeeId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Fetch employees whenever pageNumber, pageSize, searchQuery or refreshKey changes
@@ -83,11 +84,17 @@ const Employees: React.FC = () => {
   }
 
   function handleCreated() {
-    // After create, close form and refresh list (reset to page 1)
+    // After create/update, close form and refresh list (reset to page 1)
     setShowForm(false);
+    setEditingEmployeeId(null);
     setPageNumber(1);
     // bump refreshKey to force reload if needed
     setRefreshKey((k) => k + 1);
+  }
+
+  function handleEdit(id: string) {
+    setEditingEmployeeId(id);
+    setShowForm(true);
   }
 
   return (
@@ -109,14 +116,19 @@ const Employees: React.FC = () => {
 
         <div>
           {!showForm && (
-            <button onClick={() => setShowForm(true)} style={{ padding: '8px 12px' }}>New Employee</button>
+            <button onClick={() => { setEditingEmployeeId(null); setShowForm(true); }} style={{ padding: '8px 12px' }}>New Employee</button>
           )}
         </div>
       </div>
 
       {showForm && (
         <div style={{ marginBottom: 16 }}>
-          <EmployeeForm onCancel={() => setShowForm(false)} onSuccess={() => handleCreated()} />
+          <EmployeeForm
+            key={editingEmployeeId ?? 'new'}
+            employeeId={editingEmployeeId ?? undefined}
+            onCancel={() => { setShowForm(false); setEditingEmployeeId(null); }}
+            onSuccess={() => handleCreated()}
+          />
         </div>
       )}
 
@@ -140,6 +152,7 @@ const Employees: React.FC = () => {
                 <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #ddd' }}>Department</th>
                 <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #ddd' }}>Date of Joining</th>
                 <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #ddd' }}>Status</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #ddd' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -153,6 +166,9 @@ const Employees: React.FC = () => {
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>{emp.departmentName}</td>
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>{formatDate(emp.dateOfJoining)}</td>
                   <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>{emp.isActive ? 'Active' : 'Inactive'}</td>
+                  <td style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>
+                    <button onClick={() => handleEdit(emp.id)} style={{ padding: '6px 8px' }}>Edit</button>
+                  </td>
                 </tr>
               ))}
             </tbody>

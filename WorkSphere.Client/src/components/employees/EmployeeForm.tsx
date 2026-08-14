@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import type { EmployeeCreateRequest, Department } from '../../types';
-import { createEmployee } from '../../services/employeeService';
+import { createEmployee, getEmployee, updateEmployee } from '../../services/employeeService';
 import { getDepartments } from '../../services/departmentService';
 
 interface EmployeeFormProps {
   initialValues?: Partial<EmployeeCreateRequest>;
+  employeeId?: string; // when provided, form operates in edit mode and will load existing data
   onCancel?: () => void;
-  onSuccess?: (created: any) => void; // created EmployeeResponse — kept generic to avoid circular import
+  onSuccess?: (createdOrUpdated: any) => void; // created/updated EmployeeResponse
 }
 
 interface ValidationErrors {
@@ -16,7 +17,7 @@ interface ValidationErrors {
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s\.0-9]*$/; // permissive
 
-const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCancel, onSuccess }) => {
+const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, employeeId, onCancel, onSuccess }) => {
   const [employeeCode, setEmployeeCode] = useState(initialValues.employeeCode ?? '');
   const [firstName, setFirstName] = useState(initialValues.firstName ?? '');
   const [lastName, setLastName] = useState(initialValues.lastName ?? '');
@@ -28,6 +29,9 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
   const [departments, setDepartments] = useState<Department[]>([]);
   const [departmentsLoading, setDepartmentsLoading] = useState<boolean>(false);
   const [departmentsError, setDepartmentsError] = useState<string | null>(null);
+
+  const [employeeLoading, setEmployeeLoading] = useState<boolean>(false);
+  const [employeeLoadError, setEmployeeLoadError] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -56,6 +60,38 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    const id = employeeId;
+    if (!id) return;
+
+    let cancelled = false;
+    async function loadEmployee() {
+      setEmployeeLoading(true);
+      setEmployeeLoadError(null);
+      try {
+        const emp = await getEmployee(id as string);
+        if (cancelled) return;
+        // populate fields
+        setEmployeeCode(emp.employeeCode ?? '');
+        setFirstName(emp.firstName ?? '');
+        setLastName(emp.lastName ?? '');
+        setEmail(emp.email ?? '');
+        setPhoneNumber(emp.phoneNumber ?? '');
+        // normalize date to yyyy-mm-dd for input[type=date]
+        setDateOfJoining(emp.dateOfJoining ? emp.dateOfJoining.split('T')[0] : '');
+        setDepartmentId(emp.departmentId ?? '');
+      } catch (err: any) {
+        if (cancelled) return;
+        console.error('Failed to load employee', err);
+        setEmployeeLoadError(err?.message ?? 'Failed to load employee details');
+      } finally {
+        if (!cancelled) setEmployeeLoading(false);
+      }
+    }
+    loadEmployee();
+    return () => { cancelled = true; };
+  }, [employeeId]);
 
   function validate(): boolean {
     const e: ValidationErrors = {};
@@ -91,24 +127,31 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
 
     try {
       setSubmitting(true);
-      const created = await createEmployee(payload);
-      setSuccessMessage('Employee created successfully');
-      setApiError(null);
+      if (employeeId) {
+        const updated = await updateEmployee(employeeId, payload);
+        setSuccessMessage('Employee updated successfully');
+        setApiError(null);
+        if (onSuccess) onSuccess(updated);
+      } else {
+        const created = await createEmployee(payload);
+        setSuccessMessage('Employee created successfully');
+        setApiError(null);
 
-      // Reset form
-      setEmployeeCode('');
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setPhoneNumber('');
-      setDateOfJoining('');
-      setDepartmentId('');
-      setErrors({});
+        // Reset form only for create
+        setEmployeeCode('');
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPhoneNumber('');
+        setDateOfJoining('');
+        setDepartmentId('');
+        setErrors({});
 
-      if (onSuccess) onSuccess(created);
+        if (onSuccess) onSuccess(created);
+      }
     } catch (err: any) {
-      console.error('Create employee failed', err);
-      setApiError(err?.message ?? 'Failed to create employee');
+      console.error('Create/update employee failed', err);
+      setApiError(err?.message ?? 'Failed to save employee');
     } finally {
       setSubmitting(false);
     }
@@ -116,7 +159,10 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
 
   return (
     <form onSubmit={handleSubmit} style={{ border: '1px solid #eee', padding: 12, borderRadius: 4, maxWidth: 800 }} noValidate>
-      <h3>Create Employee</h3>
+      <h3>{employeeId ? 'Edit Employee' : 'Create Employee'}</h3>
+
+      {employeeId && employeeLoading && <div>Loading employee details...</div>}
+      {employeeLoadError && <div style={{ color: 'red', marginBottom: 8 }}>{employeeLoadError}</div>}
 
       {apiError && <div style={{ color: 'red', marginBottom: 8 }}>{apiError}</div>}
       {successMessage && <div style={{ color: 'green', marginBottom: 8 }}>{successMessage}</div>}
@@ -180,7 +226,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialValues = {}, onCance
             <button type="button" onClick={onCancel} disabled={submitting} style={{ padding: '8px 12px' }}>
               Cancel
             </button>
-            <button type="submit" disabled={submitting} style={{ padding: '8px 12px' }}>
+            <button type="submit" disabled={submitting || departmentsLoading || employeeLoading} style={{ padding: '8px 12px' }}>
               {submitting ? 'Saving...' : 'Submit'}
             </button>
           </div>
