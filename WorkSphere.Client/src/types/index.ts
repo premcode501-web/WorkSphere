@@ -45,3 +45,11 @@ export interface Department {
   name: string;
   code?: string;
 }
+
+// Dashboard summary counts returned by the backend
+export interface DashboardSummary {
+  totalEmployees: number;
+  activeEmployees: number;
+  inactiveEmployees: number;
+  totalDepartments: number;
+}
