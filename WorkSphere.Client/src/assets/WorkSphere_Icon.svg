@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="w" x1="20%" y1="20%" x2="90%" y2="80%">
+      <stop offset="0%" stop-color="#18D8E8"/>
+      <stop offset="45%" stop-color="#1677F2"/>
+      <stop offset="100%" stop-color="#C21BFF"/>
+    </linearGradient>
+    <linearGradient id="orbit" x1="10%" y1="30%" x2="90%" y2="70%">
+      <stop offset="0%" stop-color="#18D8E8"/>
+      <stop offset="50%" stop-color="#1479F2"/>
+      <stop offset="100%" stop-color="#9A25FF"/>
+    </linearGradient>
+    <radialGradient id="dot" cx="30%" cy="25%" r="80%">
+      <stop offset="0%" stop-color="#6DEBFF"/>
+      <stop offset="45%" stop-color="#397BFF"/>
+      <stop offset="100%" stop-color="#A817F5"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Main W -->
+  <path fill="url(#w)" d="
+    M48 72
+    L77 72 L103 144
+    L125 96
+    L143 96 L165 144
+    L191 72 L220 72
+    L178 185
+    L153 185 L134 139
+    L115 185 L90 185 Z"/>
+
+  <!-- Orbital ring -->
+  <path d="M24 130 C48 75 112 45 178 62 C211 71 229 91 232 112"
+        fill="none" stroke="url(#orbit)" stroke-width="15" stroke-linecap="round"/>
+  <path d="M232 112 C216 157 164 191 102 193 C62 194 35 179 25 158"
+        fill="none" stroke="url(#orbit)" stroke-width="15" stroke-linecap="round"/>
+
+  <!-- Foreground orbit -->
+  <path d="M22 161 C67 186 137 181 218 122"
+        fill="none" stroke="url(#orbit)" stroke-width="13" stroke-linecap="round"/>
+
+  <!-- Orbit accent -->
+  <circle cx="222" cy="92" r="17" fill="url(#dot)"/>
+  <circle cx="216" cy="86" r="4.5" fill="#fff" opacity=".8"/>
+</svg>

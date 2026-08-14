@@ -27,3 +27,29 @@ export interface PaginatedResponse<T> {
   pageSize: number;
   totalPages: number;
 }
+
+// Shape used when creating/updating an employee from the client
+export interface EmployeeCreateRequest {
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  dateOfJoining: string; // ISO date (YYYY-MM-DD)
+  departmentId: string;
+  // departmentName and departmentCode are normally derived server-side from departmentId
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  code?: string;
+}
+
+// Dashboard summary counts returned by the backend
+export interface DashboardSummary {
+  totalEmployees: number;
+  activeEmployees: number;
+  inactiveEmployees: number;
+  totalDepartments: number;
+}

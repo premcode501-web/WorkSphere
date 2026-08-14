@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './config';
-import type { EmployeeResponse, PaginatedResponse } from '../types';
+import type { EmployeeResponse, PaginatedResponse, EmployeeCreateRequest } from '../types';
 
 const EMPLOYEE_ENDPOINT = '/api/Employee';
 
@@ -53,4 +53,84 @@ export async function getEmployees(
 
   // Otherwise, assume the response matches PaginatedResponse<EmployeeResponse>
   return data as PaginatedResponse<EmployeeResponse>;
+}
+
+export async function createEmployee(payload: EmployeeCreateRequest): Promise<EmployeeResponse> {
+  const url = buildUrl(EMPLOYEE_ENDPOINT);
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to create employee: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return data as EmployeeResponse;
+}
+
+export async function getEmployee(id: string): Promise<EmployeeResponse> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to fetch employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return data as EmployeeResponse;
+}
+
+export async function updateEmployee(id: string, payload: EmployeeCreateRequest): Promise<EmployeeResponse> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to update employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  const data = await res.json();
+  return data as EmployeeResponse;
+}
+
+export async function deleteEmployee(id: string): Promise<void> {
+  const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
+
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to delete employee ${id}: ${res.status} ${res.statusText} ${text}`);
+  }
+
+  // No content expected; return void on success
+  return;
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using WorkSphere.Application.Features.Dashboard;
 using WorkSphere.Application.Features.Departments;
 using WorkSphere.Application.Features.Employees;
 using WorkSphere.Application.Interfaces;
@@ -30,6 +31,8 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<DashboardService>();
 
 var app = builder.Build();
 
