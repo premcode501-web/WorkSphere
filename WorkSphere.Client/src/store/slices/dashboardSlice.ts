@@ -16,7 +16,7 @@ const initialState: DashboardState = {
 
 export const fetchDashboardSummary = createAsyncThunk(
   'dashboard/fetchSummary',
-  async (_, thunkAPI) => {
+  async (_, _thunkAPI) => {
     const resp = await dashboardService.getDashboardSummary();
     return resp as DashboardSummary;
   }

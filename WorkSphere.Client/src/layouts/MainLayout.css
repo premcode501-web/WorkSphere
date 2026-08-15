@@ -1,0 +1,161 @@
+/* ================================
+   WorkSphere Main Layout
+================================ */
+
+body {
+  margin: 0;
+  background: #101010;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #123f45;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  padding-top: 14px;
+}
+
+/* Navbar */
+
+.custom-navbar {
+  margin: 0 18px;
+  min-height: 80px;
+  background: #f1f2d5;
+  border-radius: 5px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+/* Logo + Brand */
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #0d454b;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0d454b !important;
+  font-size: 29px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-logo-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1;
+}
+
+.brand-text h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0d454b;
+}
+
+.brand-text h6 {
+  margin: 5px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #0d454b;
+}
+/* Logo */
+
+.app-logo {
+  color: #0d454b !important;
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  text-decoration: none;
+  min-width: 220px;
+}
+
+.app-logo:hover {
+  color: #0d454b !important;
+}
+
+/* Navigation */
+
+.custom-navbar .navbar-nav {
+  align-items: center;
+}
+
+.custom-navbar .nav-link {
+  color: #0d454b;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.custom-navbar .nav-link:hover {
+  color: #0d454b;
+  opacity: 0.7;
+}
+
+.custom-navbar .nav-link.active {
+  color: #0d454b;
+  font-weight: 700;
+}
+
+/* Login */
+
+.login-btn {
+  min-width: 75px;
+  border: 0;
+  background: transparent;
+  color: #0d454b;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  opacity: 0.7;
+}
+
+/* Footer */
+
+footer {
+  color: #aaa;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+  .custom-navbar {
+    margin: 0 10px;
+    min-height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .app-logo {
+    min-width: auto;
+    font-size: 24px;
+  }
+
+  .custom-navbar .navbar-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding-top: 5px;
+  }
+
+  .login-btn {
+    margin-left: auto;
+  }
+}

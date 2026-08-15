@@ -1,0 +1,159 @@
+/* ========================================
+   WorkSphere Dashboard
+======================================== */
+
+.dashboard-page {
+  width: 100%;
+  padding: 0 10px;
+}
+
+/* Dashboard Heading */
+
+.dashboard-title {
+  text-align: center;
+  color: #f1f1f1;
+  font-size: 30px;
+  font-weight: 600;
+  margin: 32px 0 18px;
+}
+
+/* Cards Container */
+
+.dashboard-cards {
+  margin-top: 10px;
+}
+
+/* Dashboard Card */
+
+.dashboard-card {
+  position: relative;
+  min-height: 205px;
+  padding: 22px;
+  background: #181818;
+  border: 1px solid #31565b;
+  border-radius: 14px;
+  color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* Card Hover */
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  border-color: #0d454b;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+/* Icon */
+
+.card-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+
+  background: rgba(13, 69, 75, 0.25);
+  border: 1px solid #0d454b;
+  border-radius: 12px;
+
+  color: #5f9fa5;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+/* Card Title */
+
+.card-title {
+  color: #b8b8b8;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+/* Card Number */
+
+.card-value {
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+/* Card Subtitle */
+
+.card-subtitle {
+  color: #6f9295;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Loading */
+
+.dashboard-message {
+  text-align: center;
+  color: #aaa;
+  margin-top: 30px;
+}
+
+/* Error */
+
+.dashboard-error {
+  text-align: center;
+  color: #ff6b6b;
+  margin-top: 30px;
+}
+
+
+/* ========================================
+   Responsive
+======================================== */
+
+/* Tablet */
+
+@media (max-width: 991px) {
+
+  .dashboard-title {
+    margin-top: 25px;
+  }
+
+  .dashboard-card {
+    min-height: 190px;
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 575px) {
+
+  .dashboard-page {
+    padding: 0 5px;
+  }
+
+  .dashboard-title {
+    font-size: 26px;
+    margin-top: 22px;
+  }
+
+  .dashboard-card {
+    min-height: 175px;
+    padding: 20px;
+  }
+
+  .card-value {
+    font-size: 32px;
+  }
+}

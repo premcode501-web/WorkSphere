@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import EmployeeForm from '../components/employees/EmployeeForm';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchEmployees, deleteEmployeeThunk } from '../store/slices/employeeThunks';
@@ -6,6 +7,8 @@ import { setPageNumber } from '../store/slices/employeeSlice';
 
 const Employees: React.FC = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const employees = useAppSelector((s) => s.employees.employees);
   const pageNumber = useAppSelector((s) => s.employees.pageNumber);
@@ -31,6 +34,14 @@ const Employees: React.FC = () => {
     // dispatch thunk to fetch
     dispatch(fetchEmployees({ pageNumber, pageSize, search: searchQuery }));
   }, [dispatch, pageNumber, pageSize, searchQuery]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('new') === '1') {
+      setShowForm(true);
+      setEditingEmployeeId(null);
+    }
+  }, [location.search]);
 
   function handlePrev() {
     const newPage = Math.max(1, pageNumber - 1);
@@ -69,6 +80,9 @@ const Employees: React.FC = () => {
     // After create/update, close form. Thunks refresh list as needed.
     setShowForm(false);
     setEditingEmployeeId(null);
+    if (location.search.includes('new')) {
+      navigate('/employees', { replace: true });
+    }
   }
 
   function handleEdit(id: string) {
@@ -85,8 +99,7 @@ const Employees: React.FC = () => {
     setDeletingId(id);
 
     try {
-      const action = await dispatch(deleteEmployeeThunk(id));
-      // unwrap if needed (not necessary here)
+      await dispatch(deleteEmployeeThunk(id));
       setOperationMessage('Employee deleted successfully');
     } catch (err: any) {
       console.error('Failed to delete employee', err);
@@ -125,7 +138,13 @@ const Employees: React.FC = () => {
           <EmployeeForm
             key={editingEmployeeId ?? 'new'}
             employeeId={editingEmployeeId ?? undefined}
-            onCancel={() => { setShowForm(false); setEditingEmployeeId(null); }}
+            onCancel={() => {
+              setShowForm(false);
+              setEditingEmployeeId(null);
+              if (location.search.includes('new')) {
+                navigate('/employees', { replace: true });
+              }
+            }}
             onSuccess={() => handleCreated()}
           />
         </div>

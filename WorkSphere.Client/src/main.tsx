@@ -1,5 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// Bootstrap global styles
+import 'bootstrap/dist/css/bootstrap.min.css'
+// Global app styles (overrides + utilities)
 import './index.css'
 import App from './App.tsx'
 import { Provider } from 'react-redux'

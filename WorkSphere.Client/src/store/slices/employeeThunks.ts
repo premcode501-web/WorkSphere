@@ -5,7 +5,7 @@ import type { RootState } from '../store';
 
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchEmployees',
-  async (params: { pageNumber: number; pageSize: number; search?: string | undefined }, thunkAPI) => {
+  async (params: { pageNumber: number; pageSize: number; search?: string | undefined }, _thunkAPI) => {
     const { pageNumber, pageSize, search } = params;
     const resp = await employeeService.getEmployees(pageNumber, pageSize, search);
     // return paginated response
