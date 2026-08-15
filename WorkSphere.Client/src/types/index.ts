@@ -43,7 +43,22 @@ export interface EmployeeCreateRequest {
 export interface Department {
   id: string;
   name: string;
-  code?: string;
+  code: string;
+  description?: string;
+  isActive?: boolean;
+  createdOn?: string;
+}
+
+export interface DepartmentCreateRequest {
+  name: string;
+  code: string;
+  description?: string;
+}
+
+export interface DepartmentUpdateRequest {
+  name: string;
+  code: string;
+  description?: string;
 }
 
 // Dashboard summary counts returned by the backend

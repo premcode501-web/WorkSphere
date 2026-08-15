@@ -14,5 +14,7 @@ namespace WorkSphere.Application.Interfaces
         Task AddAsync(Department department);
 
         Task UpdateAsync(Department department);
+
+        Task DeleteAsync(Department department);
     }
 }

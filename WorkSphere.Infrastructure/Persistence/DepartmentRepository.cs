@@ -39,5 +39,11 @@ namespace WorkSphere.Infrastructure.Persistence
             _context.Departments.Update(department);
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(Department department)
+        {
+            _context.Departments.Remove(department);
+            await _context.SaveChangesAsync();
+        }
     }
 }

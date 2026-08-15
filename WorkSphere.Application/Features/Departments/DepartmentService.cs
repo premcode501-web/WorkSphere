@@ -42,5 +42,30 @@ namespace WorkSphere.Application.Features.Departments
 
             return department;
         }
+
+        public async Task<Department?> UpdateAsync(Guid id, DepartmentUpdateDto dto)
+        {
+            var department = await _departmentRepository.GetByIdAsync(id);
+            if (department is null)
+                return null;
+
+            department.Name = dto.Name;
+            department.Code = dto.Code;
+            department.Description = dto.Description ?? string.Empty;
+            department.ModifiedOn = DateTime.UtcNow;
+
+            await _departmentRepository.UpdateAsync(department);
+            return department;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var department = await _departmentRepository.GetByIdAsync(id);
+            if (department is null)
+                return false;
+
+            await _departmentRepository.DeleteAsync(department);
+            return true;
+        }
     }
 }

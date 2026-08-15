@@ -1,0 +1,366 @@
+/* ========================================
+   WorkSphere Employee Form
+======================================== */
+
+.employee-form {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 24px;
+
+  background: #181818;
+
+  border: 1px solid #31565b;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+
+  color: #f5f5f5;
+}
+
+
+/* ========================================
+   Header
+======================================== */
+
+.employee-form-header {
+  margin-bottom: 24px;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid rgba(49, 86, 91, 0.5);
+}
+
+.employee-form-header h3 {
+  margin: 0 0 5px;
+
+  color: #ffffff;
+
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.employee-form-header p {
+  margin: 0;
+
+  color: #888888;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   Grid
+======================================== */
+
+.employee-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* ========================================
+   Form Group
+======================================== */
+
+.employee-form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.employee-form-group label {
+  color: #dfecec;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   Inputs
+======================================== */
+
+.employee-form-group input,
+.employee-form-group select {
+  width: 100%;
+  height: 44px;
+
+  padding: 0 13px;
+
+  background: #101010;
+
+  border: 1px solid #31565b;
+  border-radius: 10px;
+
+  color: #f5f5f5;
+
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+
+  box-sizing: border-box;
+}
+
+.employee-form-group input::placeholder {
+  color: #666666;
+}
+
+.employee-form-group input:hover,
+.employee-form-group select:hover {
+  border-color: #47777c;
+}
+
+.employee-form-group input:focus,
+.employee-form-group select:focus {
+  background: #121212;
+
+  border-color: #5f9fa5;
+
+  box-shadow:
+    0 0 0 3px rgba(95, 159, 165, 0.12);
+}
+
+
+/* Date picker */
+
+.employee-form-group input[type='date'] {
+  color-scheme: dark;
+}
+
+
+/* Select */
+
+.employee-form-group select {
+  cursor: pointer;
+}
+
+.employee-form-group option {
+  background: #181818;
+  color: #f5f5f5;
+}
+
+
+/* ========================================
+   Validation
+======================================== */
+
+.employee-form-error {
+  color: #e6aaaa;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
+/* ========================================
+   Loading
+======================================== */
+
+.employee-form-loading {
+  display: flex;
+  align-items: center;
+
+  height: 44px;
+
+  padding: 0 13px;
+
+  background: #101010;
+
+  border: 1px solid #31565b;
+  border-radius: 10px;
+
+  color: #888888;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   Alerts
+======================================== */
+
+.employee-form-alert {
+  padding: 12px 14px;
+
+  margin-bottom: 18px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+}
+
+.employee-form-alert.error {
+  color: #f0b3b3;
+
+  background: rgba(180, 70, 70, 0.07);
+
+  border: 1px solid rgba(220, 130, 130, 0.35);
+}
+
+.employee-form-alert.success {
+  color: #a6dfe4;
+
+  background: rgba(95, 159, 165, 0.07);
+
+  border: 1px solid rgba(95, 159, 165, 0.35);
+}
+
+.employee-form-info {
+  padding: 12px 14px;
+
+  margin-bottom: 18px;
+
+  border-radius: 10px;
+
+  color: #aeb5b5;
+
+  background: rgba(255, 255, 255, 0.02);
+
+  border: 1px solid rgba(49, 86, 91, 0.5);
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   Actions
+======================================== */
+
+.employee-form-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 26px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid rgba(49, 86, 91, 0.5);
+}
+
+
+/* Cancel */
+
+.employee-form-cancel {
+  min-width: 90px;
+
+  padding: 10px 16px;
+
+  background: transparent;
+
+  border: 1px solid #31565b;
+  border-radius: 10px;
+
+  color: #d0d0d0;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.employee-form-cancel:hover:not(:disabled) {
+  background: rgba(95, 159, 165, 0.08);
+
+  border-color: #5f9fa5;
+
+  color: #ffffff;
+}
+
+
+/* Submit */
+
+.employee-form-submit {
+  min-width: 145px;
+
+  padding: 10px 18px;
+
+  background: #0d454b;
+
+  border: 1px solid #0d454b;
+  border-radius: 10px;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.employee-form-submit:hover:not(:disabled) {
+  background: #123f42;
+
+  border-color: #5f9fa5;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Disabled */
+
+.employee-form-submit:disabled,
+.employee-form-cancel:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* ========================================
+   Responsive
+======================================== */
+
+@media (max-width: 767px) {
+
+  .employee-form {
+    padding: 18px;
+
+    border-radius: 14px;
+  }
+
+  .employee-form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 17px;
+  }
+
+  .employee-form-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+  .employee-form-cancel,
+  .employee-form-submit {
+    width: 100%;
+  }
+}

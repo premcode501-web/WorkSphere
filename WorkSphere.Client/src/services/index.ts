@@ -9,3 +9,10 @@ export const noopService = () => {
 // Re-export specific services for convenient imports
 export { getEmployees } from './employeeService';
 export { getDashboardSummary } from './dashboardService';
+export {
+  getDepartments,
+  getDepartmentById,
+  createDepartment,
+  updateDepartment,
+  deleteDepartment,
+} from './departmentService';

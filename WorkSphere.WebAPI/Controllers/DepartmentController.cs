@@ -47,5 +47,30 @@ namespace WorkSphere.WebAPI.Controllers
                 new { id = created.Id },
                 created);
         }
+
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<Department>> Update(Guid id, [FromBody] DepartmentUpdateDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _departmentService.UpdateAsync(id, updateDto);
+
+            if (updated is null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleted = await _departmentService.DeleteAsync(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }
