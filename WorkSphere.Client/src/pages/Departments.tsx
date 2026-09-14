@@ -1,59 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import DepartmentForm from '../components/departments/DepartmentForm';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
+  fetchDepartments,
   createDepartment,
-  deleteDepartment,
-  getDepartments,
   updateDepartment,
-} from '../services/departmentService';
+  deleteDepartment,
+} from '../store/slices/departmentSlice';
 import type { Department, DepartmentCreateRequest, DepartmentUpdateRequest } from '../types';
 import './Departments.css';
 
 const Departments: React.FC = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { departments, loading, error } = useAppSelector((s) => s.departments);
+
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const loadDepartments = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data = await getDepartments();
-      setDepartments(data);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load departments';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    void loadDepartments();
-  }, []);
+    void dispatch(fetchDepartments());
+  }, [dispatch]);
 
   const handleSubmit = async (payload: DepartmentCreateRequest | DepartmentUpdateRequest) => {
     setIsSubmitting(true);
-    setError(null);
 
     try {
       if (editingDepartment) {
-        await updateDepartment(editingDepartment.id, payload as DepartmentUpdateRequest);
+        await dispatch(updateDepartment({ id: editingDepartment.id, payload: payload as DepartmentUpdateRequest })).unwrap();
       } else {
-        await createDepartment(payload as DepartmentCreateRequest);
+        await dispatch(createDepartment(payload as DepartmentCreateRequest)).unwrap();
       }
 
       setShowForm(false);
       setEditingDepartment(null);
-      await loadDepartments();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unable to save department';
-      setError(message);
+      // errors are handled in Redux state (error). Keep local UI unchanged otherwise.
+      // Could also show a toast if desired.
     } finally {
       setIsSubmitting(false);
     }
@@ -61,19 +45,14 @@ const Departments: React.FC = () => {
 
   const handleDelete = async (department: Department) => {
     const confirmed = window.confirm(`Are you sure you want to delete the ${department.name} department?`);
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     setDeletingId(department.id);
-    setError(null);
 
     try {
-      await deleteDepartment(department.id);
-      await loadDepartments();
+      await dispatch(deleteDepartment(department.id)).unwrap();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unable to delete department';
-      setError(message);
+      // error set in redux
     } finally {
       setDeletingId(null);
     }
