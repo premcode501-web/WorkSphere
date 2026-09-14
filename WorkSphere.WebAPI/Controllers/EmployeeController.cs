@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WorkSphere.Application.Features.Employees;
 using WorkSphere.Application.DTOs;
 
@@ -28,6 +29,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize]
         public async Task<ActionResult<EmployeeResponseDto>> GetById(Guid id)
         {
             var employee = await _employeeService.GetByIdAsync(id);

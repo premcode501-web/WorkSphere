@@ -18,5 +18,13 @@ namespace WorkSphere.Infrastructure.Persistence
         public DbSet<Employee> Employees => Set<Employee>();
 
         public DbSet<Department> Departments => Set<Department>();
+
+        public DbSet<User> Users => Set<User>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkSphereDbContext).Assembly);
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
