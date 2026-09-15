@@ -9,6 +9,7 @@ export interface AuthState {
   userId: string | null;
   userName: string | null;
   email: string | null;
+  role: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -22,6 +23,7 @@ function loadInitialState(): AuthState {
     userId: null,
     userName: null,
     email: null,
+    role: null,
     isAuthenticated: false,
     loading: false,
     error: null,
@@ -31,13 +33,14 @@ function loadInitialState(): AuthState {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return emptyState;
     const parsed = JSON.parse(stored) as Partial<AuthState>;
-    if (!parsed.token || !parsed.userId || !parsed.userName || !parsed.email) return emptyState;
+    if (!parsed.token || !parsed.userId || !parsed.userName || !parsed.email || !parsed.role) return emptyState;
     return {
       ...emptyState,
       token: parsed.token,
       userId: parsed.userId,
       userName: parsed.userName,
       email: parsed.email,
+      role: parsed.role,
       isAuthenticated: true,
     };
   } catch {
@@ -47,7 +50,7 @@ function loadInitialState(): AuthState {
 }
 
 function persistState(state: AuthState) {
-  if (!state.token || !state.userId || !state.userName || !state.email) {
+  if (!state.token || !state.userId || !state.userName || !state.email || !state.role) {
     localStorage.removeItem(STORAGE_KEY);
     return;
   }
@@ -56,6 +59,7 @@ function persistState(state: AuthState) {
     userId: state.userId,
     userName: state.userName,
     email: state.email,
+    role: state.role,
   }));
 }
 
@@ -79,6 +83,7 @@ const authSlice = createSlice({
       state.userId = null;
       state.userName = null;
       state.email = null;
+      state.role = null;
       state.isAuthenticated = false;
       state.loading = false;
       state.error = null;
@@ -98,6 +103,7 @@ const authSlice = createSlice({
         state.userId = action.payload.userId;
         state.userName = action.payload.userName;
         state.email = action.payload.email;
+        state.role = action.payload.role;
         state.isAuthenticated = true;
         persistState(state);
       })

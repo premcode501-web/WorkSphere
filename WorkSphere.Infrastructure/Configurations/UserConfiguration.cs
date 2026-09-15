@@ -28,6 +28,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(512);
 
+        builder.Property(user => user.Role)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
         builder.HasIndex(user => user.NormalizedEmail)
             .IsUnique();
     }

@@ -41,7 +41,8 @@ public class AuthService : IAuthService
             ExpiresAtUtc = token.ExpiresAtUtc,
             UserId = user.Id,
             UserName = user.UserName,
-            Email = user.Email
+            Email = user.Email,
+            Role = user.Role.ToString()
         };
     }
 
@@ -64,6 +65,7 @@ public class AuthService : IAuthService
             Email = request.Email.Trim(),
             NormalizedEmail = normalizedEmail,
             PasswordHash = _passwordHasher.Hash(request.Password),
+            Role = UserRole.Employee,
             IsActive = true,
             CreatedOn = DateTime.UtcNow
         };

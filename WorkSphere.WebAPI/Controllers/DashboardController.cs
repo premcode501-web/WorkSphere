@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WorkSphere.Application.DTOs;
 using WorkSphere.Application.Features.Dashboard;
 
@@ -16,6 +17,7 @@ namespace WorkSphere.WebAPI.Controllers
 
         // GET: /api/Dashboard/summary
         [HttpGet("summary")]
+        [Authorize(Policy = "CanReadWorkforceData")]
         public async Task<ActionResult<DashboardSummaryDto>> GetSummary()
         {
             var summary = await _dashboardService.GetSummaryAsync();

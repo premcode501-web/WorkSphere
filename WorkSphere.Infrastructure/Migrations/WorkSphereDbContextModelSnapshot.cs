@@ -141,6 +141,12 @@ namespace WorkSphere.Infrastructure.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Employee");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(100)

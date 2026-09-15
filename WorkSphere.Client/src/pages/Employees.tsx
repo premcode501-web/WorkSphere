@@ -8,6 +8,7 @@ import {
 } from '../store/slices/employeeThunks';
 import { setPageNumber } from '../store/slices/employeeSlice';
 import './Employees.css';
+import { canDelete, canManage } from '../utils/authorization';
 
 const Employees: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,9 @@ const Employees: React.FC = () => {
   const totalCount = useAppSelector((s) => s.employees.totalCount);
   const loading = useAppSelector((s) => s.employees.loading);
   const error = useAppSelector((s) => s.employees.error);
+  const role = useAppSelector((s) => s.auth.role);
+  const canManageEmployees = canManage(role);
+  const canDeleteEmployees = canDelete(role);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string | undefined>(
@@ -174,7 +178,7 @@ const Employees: React.FC = () => {
           Employees
         </h2>
 
-        {!showForm && (
+        {!showForm && canManageEmployees && (
           <button
             type="button"
             className="employee-add-btn"
@@ -335,7 +339,7 @@ const Employees: React.FC = () => {
                     <td>
                       <div className="employee-actions">
 
-                        <button
+                        {canManageEmployees && <button
                           type="button"
                           className="employee-action-btn edit"
                           onClick={() =>
@@ -344,9 +348,9 @@ const Employees: React.FC = () => {
                           disabled={deletingId !== null}
                         >
                           Edit
-                        </button>
+                        </button>}
 
-                        <button
+                        {canDeleteEmployees && <button
                           type="button"
                           className="employee-action-btn delete"
                           onClick={() =>
@@ -357,7 +361,7 @@ const Employees: React.FC = () => {
                           {deletingId === emp.id
                             ? 'Deleting...'
                             : 'Delete'}
-                        </button>
+                        </button>}
 
                       </div>
                     </td>

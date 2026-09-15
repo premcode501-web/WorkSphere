@@ -12,5 +12,7 @@ public class User : BaseEntity
 
     public string PasswordHash { get; set; } = string.Empty;
 
+    public UserRole Role { get; set; } = UserRole.Employee;
+
     public bool IsActive { get; set; } = true;
 }

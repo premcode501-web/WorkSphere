@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorkSphere.Application.DTOs;
 using WorkSphere.Application.Features.Departments;
@@ -17,6 +18,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "CanReadWorkforceData")]
         public async Task<ActionResult<List<Department>>> GetAll()
         {
             var departments = await _departmentService.GetAllAsync();
@@ -24,6 +26,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize(Policy = "CanReadWorkforceData")]
         public async Task<ActionResult<Department>> GetById(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
@@ -35,6 +38,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "CanManageWorkforceData")]
         public async Task<ActionResult<Department>> Create([FromBody] DepartmentCreateDto createDto)
         {
             if (!ModelState.IsValid)
@@ -49,6 +53,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = "CanManageWorkforceData")]
         public async Task<ActionResult<Department>> Update(Guid id, [FromBody] DepartmentUpdateDto updateDto)
         {
             if (!ModelState.IsValid)
@@ -63,6 +68,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "CanDeleteWorkforceData")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var deleted = await _departmentService.DeleteAsync(id);

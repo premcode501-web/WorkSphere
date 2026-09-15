@@ -18,6 +18,7 @@ namespace WorkSphere.WebAPI.Controllers
 
         // Updated: supports search, paging via query parameters
         [HttpGet]
+        [Authorize(Policy = "CanReadWorkforceData")]
         public async Task<ActionResult<PaginatedResponse<EmployeeResponseDto>>> Get([FromQuery] EmployeeQueryParameters query)
         {
             if (!ModelState.IsValid)
@@ -29,7 +30,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        [Authorize]
+        [Authorize(Policy = "CanReadWorkforceData")]
         public async Task<ActionResult<EmployeeResponseDto>> GetById(Guid id)
         {
             var employee = await _employeeService.GetByIdAsync(id);
@@ -41,6 +42,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "CanManageWorkforceData")]
         public async Task<ActionResult> Create([FromBody] EmployeeCreateDto createDto)
         {
             if (!ModelState.IsValid)
@@ -57,6 +59,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Policy = "CanManageWorkforceData")]
         public async Task<ActionResult<EmployeeResponseDto>> Update(Guid id, [FromBody] EmployeeUpdateDto updateDto)
         {
             if (!ModelState.IsValid)
@@ -71,6 +74,7 @@ namespace WorkSphere.WebAPI.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "CanDeleteWorkforceData")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var deleted = await _employeeService.DeleteAsync(id);

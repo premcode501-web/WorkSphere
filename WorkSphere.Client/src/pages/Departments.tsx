@@ -9,10 +9,14 @@ import {
 } from '../store/slices/departmentSlice';
 import type { Department, DepartmentCreateRequest, DepartmentUpdateRequest } from '../types';
 import './Departments.css';
+import { canDelete, canManage } from '../utils/authorization';
 
 const Departments: React.FC = () => {
   const dispatch = useAppDispatch();
   const { departments, loading, error } = useAppSelector((s) => s.departments);
+  const role = useAppSelector((s) => s.auth.role);
+  const canManageDepartments = canManage(role);
+  const canDeleteDepartments = canDelete(role);
 
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
@@ -63,7 +67,7 @@ const Departments: React.FC = () => {
       <div className="departments-header">
         <h2 className="departments-title">Departments</h2>
 
-        {!showForm && (
+        {!showForm && canManageDepartments && (
           <button
             type="button"
             className="departments-add-btn"
@@ -118,7 +122,7 @@ const Departments: React.FC = () => {
                     <td className="department-description">{department.description || '—'}</td>
                     <td>
                       <div className="department-actions">
-                        <button
+                        {canManageDepartments && <button
                           type="button"
                           className="btn department-action-btn"
                           onClick={() => {
@@ -127,16 +131,16 @@ const Departments: React.FC = () => {
                           }}
                         >
                           Edit
-                        </button>
+                        </button>}
 
-                        <button
+                        {canDeleteDepartments && <button
                           type="button"
                           className="btn department-action-btn delete"
                           onClick={() => handleDelete(department)}
                           disabled={deletingId === department.id}
                         >
                           {deletingId === department.id ? 'Deleting...' : 'Delete'}
-                        </button>
+                        </button>}
                       </div>
                     </td>
                   </tr>

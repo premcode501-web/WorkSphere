@@ -12,6 +12,7 @@ export interface LoginResponse {
   userId: string;
   userName: string;
   email: string;
+  role: string;
 }
 
 const AUTH_ENDPOINT = '/api/Auth/login';

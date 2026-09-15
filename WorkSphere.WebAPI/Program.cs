@@ -1,4 +1,5 @@
-﻿using System.Text;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -63,10 +64,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = jwtOptions.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            RoleClaimType = ClaimTypes.Role
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanReadWorkforceData", policy =>
+        policy.RequireRole("Admin", "HR", "Employee"));
+    options.AddPolicy("CanManageWorkforceData", policy =>
+        policy.RequireRole("Admin", "HR"));
+    options.AddPolicy("CanDeleteWorkforceData", policy =>
+        policy.RequireRole("Admin"));
+});
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<EmployeeService>();
