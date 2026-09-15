@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './config';
+import { apiRequest } from './apiClient';
 import type { Department, DepartmentCreateRequest, DepartmentUpdateRequest } from '../types';
 
 const DEPARTMENT_ENDPOINT = '/api/Department';
@@ -20,7 +21,7 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
 export async function getDepartments(): Promise<Department[]> {
   const url = buildUrl(DEPARTMENT_ENDPOINT);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -39,7 +40,7 @@ export async function getDepartments(): Promise<Department[]> {
 export async function getDepartmentById(id: string): Promise<Department> {
   const url = buildUrl(`${DEPARTMENT_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -57,7 +58,7 @@ export async function getDepartmentById(id: string): Promise<Department> {
 export async function createDepartment(payload: DepartmentCreateRequest): Promise<Department> {
   const url = buildUrl(DEPARTMENT_ENDPOINT);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -77,7 +78,7 @@ export async function createDepartment(payload: DepartmentCreateRequest): Promis
 export async function updateDepartment(id: string, payload: DepartmentUpdateRequest): Promise<Department> {
   const url = buildUrl(`${DEPARTMENT_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -97,7 +98,7 @@ export async function updateDepartment(id: string, payload: DepartmentUpdateRequ
 export async function deleteDepartment(id: string): Promise<void> {
   const url = buildUrl(`${DEPARTMENT_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'DELETE',
     headers: {
       Accept: 'application/json',

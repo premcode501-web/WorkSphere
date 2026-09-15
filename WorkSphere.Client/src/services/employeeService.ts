@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './config';
+import { apiRequest } from './apiClient';
 import type { EmployeeResponse, PaginatedResponse, EmployeeCreateRequest } from '../types';
 
 const EMPLOYEE_ENDPOINT = '/api/Employee';
@@ -22,7 +23,7 @@ export async function getEmployees(
 ): Promise<PaginatedResponse<EmployeeResponse>> {
   const url = buildUrl(EMPLOYEE_ENDPOINT, { pageNumber, pageSize, search });
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'GET',
     headers: {
       'Accept': 'application/json'
@@ -58,7 +59,7 @@ export async function getEmployees(
 export async function createEmployee(payload: EmployeeCreateRequest): Promise<EmployeeResponse> {
   const url = buildUrl(EMPLOYEE_ENDPOINT);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -79,7 +80,7 @@ export async function createEmployee(payload: EmployeeCreateRequest): Promise<Em
 export async function getEmployee(id: string): Promise<EmployeeResponse> {
   const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'GET',
     headers: {
       'Accept': 'application/json'
@@ -98,7 +99,7 @@ export async function getEmployee(id: string): Promise<EmployeeResponse> {
 export async function updateEmployee(id: string, payload: EmployeeCreateRequest): Promise<EmployeeResponse> {
   const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'PUT',
     headers: {
       'Accept': 'application/json',
@@ -119,7 +120,7 @@ export async function updateEmployee(id: string, payload: EmployeeCreateRequest)
 export async function deleteEmployee(id: string): Promise<void> {
   const url = buildUrl(`${EMPLOYEE_ENDPOINT}/${id}`);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'DELETE',
     headers: {
       'Accept': 'application/json'

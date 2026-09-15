@@ -1,13 +1,12 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppDispatch } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
 import '../layouts/MainLayout.css';
 
 const MainLayout: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const userName = useAppSelector((state) => state.auth.userName);
 
   const handleLogout = () => {
     dispatch(logout());

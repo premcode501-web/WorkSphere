@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './config';
+import { apiRequest } from './apiClient';
 
 export interface LoginRequest {
   email?: string;
@@ -17,7 +18,8 @@ const AUTH_ENDPOINT = '/api/Auth/login';
 
 export async function login(request: LoginRequest): Promise<LoginResponse> {
   const url = new URL(AUTH_ENDPOINT, API_BASE_URL || window.location.origin);
-  const response = await fetch(url, {
+  const response = await apiRequest(url, {
+    authenticated: false,
     method: 'POST',
     headers: {
       Accept: 'application/json',

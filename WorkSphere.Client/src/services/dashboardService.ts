@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './config';
+import { apiRequest } from './apiClient';
 import type { DashboardSummary } from '../types';
 
 const DASHBOARD_ENDPOINT = 'api/Dashboard/summary';
@@ -19,7 +20,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   // Backend is expected to expose a dashboard summary endpoint at /api/Dashboard
   const url = buildUrl(DASHBOARD_ENDPOINT);
 
-  const res = await fetch(url, {
+  const res = await apiRequest(url, {
     method: 'GET',
     headers: {
       Accept: 'application/json'
