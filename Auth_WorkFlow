@@ -1,0 +1,45 @@
+                    ┌───────────────┐
+                    │    React      │
+                    └───────┬───────┘
+                            │
+                       Login Request
+                            │
+                            ↓
+                    ┌───────────────┐
+                    │ AuthController│
+                    └───────┬───────┘
+                            ↓
+                     ┌────────────┐
+                     │ AuthService│
+                     └──────┬─────┘
+                            ↓
+                     ┌────────────┐
+                     │ Users Table│
+                     └──────┬─────┘
+                            ↓
+                     Password Verify
+                            ↓
+                       JWT Generate
+                            ↓
+                    ┌───────────────┐
+                    │ React receives│
+                    │     Token     │
+                    └───────┬───────┘
+                            │
+                  Authorization: Bearer
+                            │
+                            ↓
+                 ┌────────────────────┐
+                 │ JWT Authentication │
+                 │    Middleware      │
+                 └─────────┬──────────┘
+                           ↓
+                     [Authorize]
+                           ↓
+                  EmployeeController
+                           ↓
+                    EmployeeService
+                           ↓
+                   EmployeeRepository
+                           ↓
+                      SQL Server
