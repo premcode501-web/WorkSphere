@@ -1,8 +1,19 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { logout } from '../store/slices/authSlice';
 import '../layouts/MainLayout.css';
 
 const MainLayout: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const userName = useAppSelector((state) => state.auth.userName);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="app-wrapper">
 
@@ -48,8 +59,8 @@ const MainLayout: React.FC = () => {
           </NavLink>
         </nav>
 
-        <button className="login-btn">
-          Login
+        <button className="login-btn" onClick={handleLogout}>
+          Logout
         </button>
       </header>
 
