@@ -1,0 +1,25 @@
+User Management API — Easy Notes
+Approach used
+I followed the project’s existing Clean Architecture. Each layer has a separate job:
+
+Controller → Service → Repository → Database
+
+Controller: Receives the HTTP request, calls the service, and returns the right HTTP status.
+Service: Applies the user rules—validates the username, email, and role; checks for duplicates; and hashes passwords.
+Repository: Reads and saves users asynchronously through Entity Framework Core.
+Database: Stores the user details and enforces unique usernames and emails.
+What the API does
+The endpoints are in UsersController.cs:
+
+GET /api/Users — list users
+GET /api/Users/{id} — get one user
+POST /api/Users — create a user
+PUT /api/Users/{id} — update user details, role, and optionally password
+PATCH /api/Users/{id}/status — activate or deactivate a user
+
+Important protections
+Admin-only access: The controller requires the CanManageUsers policy, which accepts only users with the Admin role.
+Password safety: Passwords are hashed; API responses use a DTO that does not include the password hash.
+Duplicate prevention: Usernames and emails are checked before saving, with unique database indexes as an additional safeguard.
+Last active Admin: The repository checks inside a transaction that changing a user’s role or status won’t leave the system without an active Admin. The related exception is LastActiveAdminException.cs.
+In simple terms: the controller handles the request, the service makes the decisions, the repository handles the database, and the safety checks protect users and the system.
